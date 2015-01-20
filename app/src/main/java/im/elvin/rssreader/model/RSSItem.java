@@ -10,16 +10,14 @@ public class RSSItem {
     private String title;
     private String link;
     private String description;
-    private Date pubDate;
     private String category;
     private String author;
 
-    public RSSItem(String itemId, String title, String link, String description, Date pubDate, String category, String author) {
+    public RSSItem(String itemId, String title, String link, String description, String category, String author) {
         this.itemId = itemId;
         this.title = title;
         this.link = link;
         this.description = description;
-        this.pubDate = pubDate;
         this.category = category;
         this.author = author;
     }
@@ -43,10 +41,6 @@ public class RSSItem {
 
     public String getDescription() {
         return description;
-    }
-
-    public Date getPubDate() {
-        return pubDate;
     }
 
     public String getCategory() {

@@ -10,18 +10,16 @@ import java.util.List;
 public class RSSFeed {
     private String feedId;
     private String title;
+    private String address;
     private String link;
     private String description;
-    private Date pubDate;
-    private Date lastBuildDate;
 
-    public RSSFeed(String feedId, String title, String link, String description, Date pubDate, Date lastBuildDate) {
+    public RSSFeed(String feedId, String title, String address, String link, String description) {
         this.feedId = feedId;
         this.title = title;
         this.link = link;
+        this.address = address;
         this.description = description;
-        this.pubDate = pubDate;
-        this.lastBuildDate = lastBuildDate;
     }
 
     @Override
@@ -41,15 +39,11 @@ public class RSSFeed {
         return link;
     }
 
+    public String getAddress() {
+        return address;
+    }
+
     public String getDescription() {
         return description;
-    }
-
-    public Date getPubDate() {
-        return pubDate;
-    }
-
-    public Date getLastBuildDate() {
-        return lastBuildDate;
     }
 }

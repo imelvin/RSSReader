@@ -1,7 +1,6 @@
 package im.elvin.rssreader;
 
 import android.test.AndroidTestCase;
-import android.util.Log;
 
 import java.util.List;
 
@@ -17,16 +16,13 @@ public class RSSFeedDaoTest extends AndroidTestCase {
     public void testGetItemListByFeed() {
         RSSFeedDao feedDao = new RSSFeedDaoImpl(getContext());
 
-        RSSFeed feed1 = new RSSFeed(null, "Test Feed 1", null, null, null, null);
+        RSSFeed feed1 = new RSSFeed(null, "Test Feed 1", null, null, null);
         feedDao.createFeed(feed1);
 
         List<RSSFeed> feedList = feedDao.getAllFeedList();
 
         assertNotNull(feedList);
-
-        for (RSSFeed f : feedList) {
-            Log.d("feed", f.toString());
-        }
+        assertEquals(feedList.size() > 0, true);
 
         feedDao.close();
     }
