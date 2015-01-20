@@ -20,10 +20,22 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String SQL_CREATE_FEED = " create table rss_feed ( " +
                                     "     id integer primary key autoincrement, " +
                                     "     feed_title varchar(50), " +
+                                    "     feed_title varchar(50), " +
                                     "     feed_link varchar(50), " +
                                     "     feed_description varchar(200), " +
                                     "     feed_pubdate date, " +
                                     "     feed_lastbuilddate date " +
+                                    " ) ";
+
+    private static final String SQL_CREATE_ITEM = " create table rss_item ( " +
+                                    "     id integer primary key autoincrement, " +
+                                    "     item_title varchar(50), " +
+                                    "     item_link varchar(50), " +
+                                    "     item_description varchar(200), " +
+                                    "     item_pubdate date, " +
+                                    "     item_category varchar(50), " +
+                                    "     item_author varchar(30), " +
+                                    "     feed_id integer " +
                                     " ) ";
 
     public DBHelper(Context context) {
@@ -33,6 +45,7 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_FEED);
+        db.execSQL(SQL_CREATE_ITEM);
     }
 
     @Override
