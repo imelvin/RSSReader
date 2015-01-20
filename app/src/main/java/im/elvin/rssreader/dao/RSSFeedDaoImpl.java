@@ -44,23 +44,61 @@ public class RSSFeedDaoImpl implements RSSFeedDao {
 
     @Override
     public List<RSSItem> getItemListByFeedId(int feedId) {
-        return null;
+        String sql = "select * from rss_item where feed_id = ?";
+        Cursor cursor = db.rawQuery(sql, new String[] {String.valueOf(feedId)});
+        List<RSSItem> itemList = new ArrayList<RSSItem>();
+
+        while (cursor.moveToNext()) {
+            String itemId = cursor.getString(0);
+            String itemTitle = cursor.getString(1);
+            String itemLink = cursor.getString(2);
+            String itemDescription = cursor.getString(3);
+            String itemCategory = cursor.getString(4);
+            String itemAuthor = cursor.getString(5);
+
+            RSSItem item = new RSSItem(itemId, itemTitle, itemLink, itemDescription, itemCategory, itemAuthor);
+            itemList.add(item);
+        }
+        return itemList;
     }
 
     @Override
     public RSSItem getItemByItemId(int itemId) {
-        return null;
+        String sql = "select * from rss_item where id = ?";
+        Cursor cursor = db.rawQuery(sql, new String[] {String.valueOf(itemId)});
+        List<RSSItem> itemList = new ArrayList<RSSItem>();
+
+        cursor.moveToNext();
+        String id = cursor.getString(0);
+        String itemTitle = cursor.getString(1);
+        String itemLink = cursor.getString(2);
+        String itemDescription = cursor.getString(3);
+        String itemCategory = cursor.getString(4);
+        String itemAuthor = cursor.getString(5);
+
+        RSSItem item = new RSSItem(id, itemTitle, itemLink, itemDescription, itemCategory, itemAuthor);
+
+        return item;
     }
 
     @Override
     public void createFeed(RSSFeed feed) {
         String sql = "insert into rss_feed (feed_title, feed_address, feed_link, feed_description) values (?, ?, ?, ?)";
+        db.beginTransaction();
         db.execSQL(sql, new Object[] {feed.getTitle(), feed.getAddress(), feed.getLink(), feed.getDescription()});
+        db.endTransaction();
     }
 
     @Override
     public void addItems(int feedId, List<RSSItem> itemList) {
+        String sql = "insert into rss_item (item_title, item_link, item_description, item_category, item_author, feed_id) values (?, ?, ?, ?, ?, ?)";
+        db.beginTransaction();
 
+        for (RSSItem item : itemList) {
+            db.execSQL(sql, new Object[] {item.getTitle(), item.getLink(), item.getDescription(), item.getCategory(), item.getAuthor(), feedId});
+        }
+
+        db.endTransaction();
     }
 
     @Override
