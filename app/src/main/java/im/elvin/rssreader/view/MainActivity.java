@@ -78,6 +78,12 @@ public class MainActivity extends ActionBarActivity
         });
     }
 
+    @Override
+    protected void onDestroy() {
+        feedDao.close();
+        super.onDestroy();
+    }
+
     public void loadItemList(List<RSSItem> itemList) {
         String [] mFrom = new String[] {"rss_item_title", "rss_item_description"};
         int [] mTo = new int[] {R.id.rss_item_title, R.id.rss_item_description};

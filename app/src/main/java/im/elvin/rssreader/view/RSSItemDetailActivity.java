@@ -35,6 +35,12 @@ public class RSSItemDetailActivity extends Activity {
         this.loadData(feedDao.getItemByItemId(Integer.valueOf(itemId)));
     }
 
+    @Override
+    protected void onDestroy() {
+        feedDao.close();
+        super.onDestroy();
+    }
+
     public void loadData(RSSItem item) {
         titleView.setText(item.getTitle());
         descriptionView.setText(item.getDescription());

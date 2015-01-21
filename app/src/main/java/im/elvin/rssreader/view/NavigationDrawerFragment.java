@@ -20,9 +20,19 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import im.elvin.rssreader.R;
+import im.elvin.rssreader.dao.RSSFeedDao;
+import im.elvin.rssreader.dao.RSSFeedDaoImpl;
+import im.elvin.rssreader.model.RSSFeed;
+import im.elvin.rssreader.model.RSSItem;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -60,12 +70,16 @@ public class NavigationDrawerFragment extends Fragment {
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
+    private RSSFeedDao feedDao;
+
     public NavigationDrawerFragment() {
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        feedDao = new RSSFeedDaoImpl(this.getActivity());
 
         // Read in the flag indicating whether or not the user has demonstrated awareness of the
         // drawer. See PREF_USER_LEARNED_DRAWER for details.
@@ -79,6 +93,12 @@ public class NavigationDrawerFragment extends Fragment {
 
         // Select either the default item (0) or the last selected item.
         selectItem(mCurrentSelectedPosition);
+    }
+
+    @Override
+    public void onDestroy() {
+        feedDao.close();
+        super.onDestroy();
     }
 
     @Override
@@ -99,15 +119,23 @@ public class NavigationDrawerFragment extends Fragment {
                 selectItem(position);
             }
         });
-        mDrawerListView.setAdapter(new ArrayAdapter<String>(
-                getActionBar().getThemedContext(),
-                android.R.layout.simple_list_item_1,
-                android.R.id.text1,
-                new String[]{
-                        getString(R.string.title_section1),
-                        getString(R.string.title_section2),
-                        getString(R.string.title_section3),
-                }));
+        List<RSSFeed> feedList = feedDao.getAllFeedList();
+
+        String [] mFrom = new String[] {"text1"};
+        int [] mTo = new int[] {android.R.id.text1};
+
+        List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+        Map<String,Object> mMap = null;
+        for (RSSFeed feed : feedList) {
+            mMap = new HashMap<String,Object>();
+            mMap.put("rss_feed_id", feed.getFeedId());
+            mMap.put("text1", feed.getTitle());
+            mList.add(mMap);
+        }
+
+        SimpleAdapter mAdapter = new SimpleAdapter(getActionBar().getThemedContext(), mList, android.R.layout.simple_list_item_1, mFrom, mTo);
+
+        mDrawerListView.setAdapter(mAdapter);
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;
     }
