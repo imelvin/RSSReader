@@ -63,7 +63,7 @@ public class MainActivity extends ActionBarActivity
 
         itemListView = (ListView) findViewById(R.id.item_list);
 
-        this.loadItemList(feedDao.getItemListByFeedId(1));
+        this.loadFeed("1");
 
         itemListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -82,6 +82,11 @@ public class MainActivity extends ActionBarActivity
     protected void onDestroy() {
         feedDao.close();
         super.onDestroy();
+    }
+
+    public void loadFeed(String feedId) {
+        List<RSSItem> itemList = feedDao.getItemListByFeedId(feedId);
+        this.loadItemList(itemList);
     }
 
     public void loadItemList(List<RSSItem> itemList) {
@@ -103,12 +108,14 @@ public class MainActivity extends ActionBarActivity
     }
 
     @Override
-    public void onNavigationDrawerItemSelected(int position) {
+    public void onFeedSelected(int position, String feedId) {
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
                 .commit();
+
+        this.loadFeed(feedId);
     }
 
     public void onSectionAttached(int number) {

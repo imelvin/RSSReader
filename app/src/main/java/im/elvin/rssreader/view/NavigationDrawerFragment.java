@@ -71,6 +71,7 @@ public class NavigationDrawerFragment extends Fragment {
     private boolean mUserLearnedDrawer;
 
     private RSSFeedDao feedDao;
+    private List<RSSFeed> feedList;
 
     public NavigationDrawerFragment() {
     }
@@ -92,7 +93,7 @@ public class NavigationDrawerFragment extends Fragment {
         }
 
         // Select either the default item (0) or the last selected item.
-        selectItem(mCurrentSelectedPosition);
+//        selectItem(mCurrentSelectedPosition, feedList.get(0).getFeedId());
     }
 
     @Override
@@ -116,10 +117,11 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectItem(position);
+                Map<String, Object> map = (Map<String, Object>) parent.getItemAtPosition(position);
+                selectItem(position, map.get("rss_feed_id").toString());
             }
         });
-        List<RSSFeed> feedList = feedDao.getAllFeedList();
+        feedList = feedDao.getAllFeedList();
 
         String [] mFrom = new String[] {"text1"};
         int [] mTo = new int[] {android.R.id.text1};
@@ -218,7 +220,7 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
-    private void selectItem(int position) {
+    private void selectItem(int position, String feedId) {
         mCurrentSelectedPosition = position;
         if (mDrawerListView != null) {
             mDrawerListView.setItemChecked(position, true);
@@ -227,7 +229,7 @@ public class NavigationDrawerFragment extends Fragment {
             mDrawerLayout.closeDrawer(mFragmentContainerView);
         }
         if (mCallbacks != null) {
-            mCallbacks.onNavigationDrawerItemSelected(position);
+            mCallbacks.onFeedSelected(position, feedId);
         }
     }
 
@@ -307,6 +309,6 @@ public class NavigationDrawerFragment extends Fragment {
         /**
          * Called when an item in the navigation drawer is selected.
          */
-        void onNavigationDrawerItemSelected(int position);
+        void onFeedSelected(int position, String feedId);
     }
 }

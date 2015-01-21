@@ -32,7 +32,7 @@ public class RSSItemDetailActivity extends Activity {
         feedDao = new RSSFeedDaoImpl(this.getApplicationContext());
         itemId = getIntent().getExtras().getString("rss_item_id");
 
-        this.loadData(feedDao.getItemByItemId(Integer.valueOf(itemId)));
+        this.loadData(feedDao.getItemByItemId(itemId));
     }
 
     @Override

@@ -43,7 +43,7 @@ public class RSSFeedDaoImpl implements RSSFeedDao {
     }
 
     @Override
-    public List<RSSItem> getItemListByFeedId(int feedId) {
+    public List<RSSItem> getItemListByFeedId(String feedId) {
         String sql = "select * from rss_item where feed_id = ?";
         Cursor cursor = db.rawQuery(sql, new String[] {String.valueOf(feedId)});
         List<RSSItem> itemList = new ArrayList<RSSItem>();
@@ -63,7 +63,7 @@ public class RSSFeedDaoImpl implements RSSFeedDao {
     }
 
     @Override
-    public RSSItem getItemByItemId(int itemId) {
+    public RSSItem getItemByItemId(String itemId) {
         String sql = "select * from rss_item where id = ?";
         Cursor cursor = db.rawQuery(sql, new String[] {String.valueOf(itemId)});
         List<RSSItem> itemList = new ArrayList<RSSItem>();
@@ -88,7 +88,7 @@ public class RSSFeedDaoImpl implements RSSFeedDao {
     }
 
     @Override
-    public void addItems(int feedId, List<RSSItem> itemList) {
+    public void addItems(String feedId, List<RSSItem> itemList) {
         String sql = "insert into rss_item (item_title, item_link, item_description, item_category, item_author, feed_id) values (?, ?, ?, ?, ?, ?)";
 
         for (RSSItem item : itemList) {

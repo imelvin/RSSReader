@@ -12,13 +12,13 @@ public interface RSSFeedDao {
 
     public List<RSSFeed> getAllFeedList();
 
-    public List<RSSItem> getItemListByFeedId(int feedId);
+    public List<RSSItem> getItemListByFeedId(String feedId);
 
-    public RSSItem getItemByItemId(int itemId);
+    public RSSItem getItemByItemId(String itemId);
 
     public void createFeed(RSSFeed feed);
 
-    public void addItems(int feedId, List<RSSItem> itemList);
+    public void addItems(String feedId, List<RSSItem> itemList);
 
     public void close();
 
