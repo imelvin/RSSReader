@@ -84,21 +84,16 @@ public class RSSFeedDaoImpl implements RSSFeedDao {
     @Override
     public void createFeed(RSSFeed feed) {
         String sql = "insert into rss_feed (feed_title, feed_address, feed_link, feed_description) values (?, ?, ?, ?)";
-        db.beginTransaction();
         db.execSQL(sql, new Object[] {feed.getTitle(), feed.getAddress(), feed.getLink(), feed.getDescription()});
-        db.endTransaction();
     }
 
     @Override
     public void addItems(int feedId, List<RSSItem> itemList) {
         String sql = "insert into rss_item (item_title, item_link, item_description, item_category, item_author, feed_id) values (?, ?, ?, ?, ?, ?)";
-        db.beginTransaction();
 
         for (RSSItem item : itemList) {
             db.execSQL(sql, new Object[] {item.getTitle(), item.getLink(), item.getDescription(), item.getCategory(), item.getAuthor(), feedId});
         }
-
-        db.endTransaction();
     }
 
     @Override

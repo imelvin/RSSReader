@@ -1,22 +1,31 @@
-package im.elvin.rssreader;
+package im.elvin.rssreader.view;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
-import android.widget.ArrayAdapter;
-import android.widget.TextView;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import im.elvin.rssreader.R;
+import im.elvin.rssreader.dao.RSSFeedDao;
+import im.elvin.rssreader.dao.RSSFeedDaoImpl;
+import im.elvin.rssreader.model.RSSItem;
 
 
 public class MainActivity extends ActionBarActivity
@@ -32,10 +41,14 @@ public class MainActivity extends ActionBarActivity
      */
     private CharSequence mTitle;
 
+    private ListView itemListView;
+
+    private RSSFeedDao feedDao;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_rss_item_list);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -45,6 +58,42 @@ public class MainActivity extends ActionBarActivity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
+        feedDao = new RSSFeedDaoImpl(this.getApplicationContext());
+
+        itemListView = (ListView) findViewById(R.id.item_list);
+
+        this.loadItemList(feedDao.getItemListByFeedId(1));
+
+        itemListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Map<String, Object> map = (Map<String, Object>) parent.getItemAtPosition(position);
+                Intent intent = new Intent(getApplicationContext(), RSSItemDetailActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("rss_item_id", map.get("rss_item_id").toString());
+                intent.putExtras(bundle);
+                startActivity(intent);
+            }
+        });
+    }
+
+    public void loadItemList(List<RSSItem> itemList) {
+        String [] mFrom = new String[] {"rss_item_title", "rss_item_description"};
+        int [] mTo = new int[] {R.id.rss_item_title, R.id.rss_item_description};
+
+        List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+        Map<String,Object> mMap = null;
+        for (RSSItem item : itemList) {
+            mMap = new HashMap<String,Object>();
+            mMap.put("rss_item_id", item.getItemId());
+            mMap.put("rss_item_title", item.getTitle());
+            mMap.put("rss_item_description", item.getDescription());
+            mList.add(mMap);
+        }
+
+        SimpleAdapter mAdapter = new SimpleAdapter(this.getApplicationContext(), mList, R.layout.rssitem_list_item, mFrom, mTo);
+        itemListView.setAdapter(mAdapter);
     }
 
     @Override
