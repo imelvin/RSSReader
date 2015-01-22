@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 import im.elvin.rssreader.R;
+import im.elvin.rssreader.constant.Constant;
 import im.elvin.rssreader.dao.RSSFeedDao;
 import im.elvin.rssreader.dao.RSSFeedDaoImpl;
 import im.elvin.rssreader.model.RSSFeed;
@@ -116,7 +117,14 @@ public class NavigationDrawerFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (resultCode) {
+        case Constant.RESULT_OK:
+            Bundle bundle = data.getExtras();
+            String feedAddress = bundle.getString("feed_address");
+            Toast.makeText(getActivity(), feedAddress, Toast.LENGTH_SHORT);
+            break;
+        }
     }
 
     @Override
@@ -131,7 +139,7 @@ public class NavigationDrawerFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), AddFeedActivity.class);
-                startActivityForResult(intent, 0);
+                startActivityForResult(intent, Constant.REQUEST_ADD_FEED);
             }
         });
 
