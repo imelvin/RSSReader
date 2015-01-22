@@ -20,6 +20,10 @@
             android:name=".view.RSSItemDetailActivity"
             android:label="@string/title_activity_rssitem_detail" >
         </activity>
+        <activity
+            android:name=".view.AddFeedActivity"
+            android:label="@string/title_activity_add_feed" >
+        </activity>
     </application>
 
 </manifest>

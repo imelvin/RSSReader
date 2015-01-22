@@ -11,5 +11,8 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_rssitem_detail">RSSItemDetailActivity</string>
     <string name="hello_world">Hello world!</string>
+    <string name="add_feed">Add Feed</string>
+    <string name="title_activity_add_feed">AddFeedActivity</string>
+    <string name="feed_address">Feed Address</string>
 
 </resources>
