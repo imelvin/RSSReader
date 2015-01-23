@@ -2,13 +2,11 @@ package im.elvin.rssreader.view;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import im.elvin.rssreader.R;
 import im.elvin.rssreader.constant.Constant;

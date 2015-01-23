@@ -1,16 +1,10 @@
 package im.elvin.rssreader.dao;
 
-import android.app.Activity;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import java.io.File;
-import java.util.List;
-
 import im.elvin.rssreader.constant.Constant;
-import im.elvin.rssreader.model.RSSFeed;
-import im.elvin.rssreader.model.RSSItem;
 
 /**
  * Created by elvin on 15/1/19.

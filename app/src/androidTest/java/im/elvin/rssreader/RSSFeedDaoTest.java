@@ -32,9 +32,9 @@ public class RSSFeedDaoTest extends AndroidTestCase {
             itemList.add(item);
         }
 
-        feedDao.addItems(1, itemList);
+        feedDao.addItems("1", itemList);
 
-        itemList = feedDao.getItemListByFeedId(1);
+        itemList = feedDao.getItemListByFeedId("1");
         assertNotNull(itemList);
         assertEquals(itemList.size() > 0, true);
 

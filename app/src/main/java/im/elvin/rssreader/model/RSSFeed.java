@@ -1,9 +1,5 @@
 package im.elvin.rssreader.model;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 /**
  * Created by elvin on 15/1/19.
  */

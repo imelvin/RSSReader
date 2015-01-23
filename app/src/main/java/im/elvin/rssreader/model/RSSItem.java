@@ -1,7 +1,5 @@
 package im.elvin.rssreader.model;
 
-import java.util.Date;
-
 /**
  * Created by elvin on 15/1/19.
  */
