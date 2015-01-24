@@ -145,7 +145,7 @@ public class NavigationDrawerFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Map<String, Object> map = (Map<String, Object>) parent.getItemAtPosition(position);
-                selectItem(position, map.get("rss_feed_id").toString());
+                selectItem(position, (RSSFeed) map.get("rss_feed"));
             }
         });
         feedList = feedDao.getAllFeedList();
@@ -157,7 +157,7 @@ public class NavigationDrawerFragment extends Fragment {
         Map<String,Object> mMap = null;
         for (RSSFeed feed : feedList) {
             mMap = new HashMap<String,Object>();
-            mMap.put("rss_feed_id", feed.getFeedId());
+            mMap.put("rss_feed", feed);
             mMap.put("text1", feed.getTitle());
             mList.add(mMap);
         }
@@ -247,7 +247,7 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
-    private void selectItem(int position, String feedId) {
+    private void selectItem(int position, RSSFeed feed) {
         mCurrentSelectedPosition = position;
         if (mDrawerListView != null) {
             mDrawerListView.setItemChecked(position, true);
@@ -256,7 +256,7 @@ public class NavigationDrawerFragment extends Fragment {
             mDrawerLayout.closeDrawer(mFragmentContainerView);
         }
         if (mCallbacks != null) {
-            mCallbacks.onFeedSelected(position, feedId);
+            mCallbacks.onFeedSelected(position, feed);
         }
     }
 
@@ -336,6 +336,6 @@ public class NavigationDrawerFragment extends Fragment {
         /**
          * Called when an item in the navigation drawer is selected.
          */
-        void onFeedSelected(int position, String feedId);
+        void onFeedSelected(int position, RSSFeed feed);
     }
 }

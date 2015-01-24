@@ -12,7 +12,12 @@ public interface RSSFeedDao {
 
     public List<RSSFeed> getAllFeedList();
 
-    public List<RSSItem> getItemListByFeedId(String feedId);
+    public List<RSSItem> getItemListByFeedId(String feedId, int pageStart, int pageLimit);
+
+    public List<RSSItem> getNewItemListByFeedId(String feedId, String itemId);
+
+    public List<RSSItem> getOldItemListByFeedId(String feedId, String itemId, int pageLimit);
+
 
     public RSSItem getItemByItemId(String itemId);
 

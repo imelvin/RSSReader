@@ -26,8 +26,7 @@ public class RSSFeedDaoImpl implements RSSFeedDao {
 
     @Override
     public List<RSSFeed> getAllFeedList() {
-        String sql = "select * from rss_feed";
-        Cursor cursor = db.rawQuery(sql, null);
+        Cursor cursor = db.query("rss_feed", new String[] {"id", "feed_title", "feed_address", "feed_link", "feed_description"}, null, null, null, null, null);
         List<RSSFeed> feedList = new ArrayList<RSSFeed>();
 
         while (cursor.moveToNext()) {
@@ -44,9 +43,46 @@ public class RSSFeedDaoImpl implements RSSFeedDao {
     }
 
     @Override
-    public List<RSSItem> getItemListByFeedId(String feedId) {
-        String sql = "select * from rss_item where feed_id = ?";
-        Cursor cursor = db.rawQuery(sql, new String[] {String.valueOf(feedId)});
+    public List<RSSItem> getItemListByFeedId(String feedId, int pageStart, int pageLimit) {
+        Cursor cursor = db.query("rss_item", new String[] {"id", "item_title", "item_link", "item_description", "item_category", "item_author"}, "feed_id=?", new String[] {feedId}, null, null, "id desc", pageStart + "," + (pageStart + pageLimit));
+        List<RSSItem> itemList = new ArrayList<RSSItem>();
+
+        while (cursor.moveToNext()) {
+            String itemId = cursor.getString(0);
+            String itemTitle = cursor.getString(1);
+            String itemLink = cursor.getString(2);
+            String itemDescription = cursor.getString(3);
+            String itemCategory = cursor.getString(4);
+            String itemAuthor = cursor.getString(5);
+
+            RSSItem item = new RSSItem(itemId, itemTitle, itemLink, itemDescription, itemCategory, itemAuthor);
+            itemList.add(item);
+        }
+        return itemList;
+    }
+
+    @Override
+    public List<RSSItem> getNewItemListByFeedId(String feedId, String id) {
+        Cursor cursor = db.query("rss_item", new String[] {"id", "item_title", "item_link", "item_description", "item_category", "item_author"}, "feed_id=? and id > ?", new String[] {feedId, id}, null, null, "id desc");
+        List<RSSItem> itemList = new ArrayList<RSSItem>();
+
+        while (cursor.moveToNext()) {
+            String itemId = cursor.getString(0);
+            String itemTitle = cursor.getString(1);
+            String itemLink = cursor.getString(2);
+            String itemDescription = cursor.getString(3);
+            String itemCategory = cursor.getString(4);
+            String itemAuthor = cursor.getString(5);
+
+            RSSItem item = new RSSItem(itemId, itemTitle, itemLink, itemDescription, itemCategory, itemAuthor);
+            itemList.add(item);
+        }
+        return itemList;
+    }
+
+    @Override
+    public List<RSSItem> getOldItemListByFeedId(String feedId, String id, int pageLimit) {
+        Cursor cursor = db.query("rss_item", new String[] {"id", "item_title", "item_link", "item_description", "item_category", "item_author"}, "feed_id=? and id < ?", new String[] {feedId, id}, null, null, "id desc", "0," + pageLimit);
         List<RSSItem> itemList = new ArrayList<RSSItem>();
 
         while (cursor.moveToNext()) {
@@ -65,8 +101,7 @@ public class RSSFeedDaoImpl implements RSSFeedDao {
 
     @Override
     public RSSItem getItemByItemId(String itemId) {
-        String sql = "select * from rss_item where id = ?";
-        Cursor cursor = db.rawQuery(sql, new String[] {String.valueOf(itemId)});
+        Cursor cursor = db.query("rss_item", new String[]{"id", "item_title", "item_link", "item_description", "item_category", "item_author"}, "id=?", new String[]{itemId}, null, null, null);
         List<RSSItem> itemList = new ArrayList<RSSItem>();
 
         cursor.moveToNext();
@@ -98,7 +133,10 @@ public class RSSFeedDaoImpl implements RSSFeedDao {
         String sql = "insert into rss_item (item_title, item_link, item_description, item_category, item_author, feed_id) values (?, ?, ?, ?, ?, ?)";
 
         for (RSSItem item : itemList) {
-            db.execSQL(sql, new Object[] {item.getTitle(), item.getLink(), item.getDescription(), item.getCategory(), item.getAuthor(), feedId});
+            Cursor cursor = db.query("rss_item", new String[] {"id"}, "feed_id=? and item_link=?", new String[] {feedId, item.getLink()}, null, null, null);
+            if (cursor.moveToNext()) {
+                db.execSQL(sql, new Object[] {item.getTitle(), item.getLink(), item.getDescription(), item.getCategory(), item.getAuthor(), feedId});
+            }
         }
     }
 

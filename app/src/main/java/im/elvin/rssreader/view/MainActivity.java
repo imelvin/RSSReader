@@ -2,6 +2,8 @@ package im.elvin.rssreader.view;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.DataSetObserver;
+import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -15,25 +17,31 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 import android.widget.AdapterView;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
-import java.util.ArrayList;
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import im.elvin.rssreader.R;
 import im.elvin.rssreader.dao.RSSFeedDao;
 import im.elvin.rssreader.dao.RSSFeedDaoImpl;
+import im.elvin.rssreader.helper.RSSHelper;
+import im.elvin.rssreader.model.RSSFeed;
 import im.elvin.rssreader.model.RSSItem;
 
 
 public class MainActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks, PullToRefreshBase.OnRefreshListener<ListView> {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks, PullToRefreshBase.OnRefreshListener2<ListView> {
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -47,7 +55,14 @@ public class MainActivity extends ActionBarActivity
 
     private PullToRefreshListView itemListView;
 
+    private RSSFeed feed;
+    private LinkedList<Map<String, Object>> itemList;
+    private SimpleAdapter itemListAdapter;
     private RSSFeedDao feedDao;
+    private String topRowId;
+    private String bottomRowId;
+
+    private int pageLimit = 15;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,8 +82,7 @@ public class MainActivity extends ActionBarActivity
 
         itemListView = (PullToRefreshListView) findViewById(R.id.item_list);
         itemListView.setOnRefreshListener(this);
-
-        this.loadFeed("1");
+        itemListView.setMode(PullToRefreshBase.Mode.BOTH);
 
         itemListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -81,6 +95,7 @@ public class MainActivity extends ActionBarActivity
                 startActivity(intent);
             }
         });
+
     }
 
     @Override
@@ -90,42 +105,110 @@ public class MainActivity extends ActionBarActivity
     }
 
     @Override
-    public void onRefresh(PullToRefreshBase<ListView> refreshView) {
-        itemListView.onRefreshComplete();
+    public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
+        GetMoreTask getMoreTask = new GetMoreTask();
+        getMoreTask.execute();
+    }
+
+    @Override
+    public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
+        LoadDataTask loadDataTask = new LoadDataTask();
+        loadDataTask.execute();
     }
 
     public void loadFeed(String feedId) {
-        List<RSSItem> itemList = feedDao.getItemListByFeedId(feedId);
-        this.loadItemList(itemList);
+        List<RSSItem> itemList = feedDao.getItemListByFeedId(feedId, 0, pageLimit);
+        if (itemList != null && itemList.size() > 0) {
+            topRowId = itemList.get(0).getItemId();
+            bottomRowId = itemList.get(itemList.size() - 1).getItemId();
+            this.loadItemList(itemList);
+        }
     }
 
-    public void loadItemList(List<RSSItem> itemList) {
+    public void loadItemList(List<RSSItem> items) {
         String [] mFrom = new String[] {"rss_item_title", "rss_item_description"};
         int [] mTo = new int[] {R.id.rss_item_title, R.id.rss_item_description};
 
-        List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+        itemList = convertMapList(items);
+
+        itemListAdapter = new SimpleAdapter(this.getApplicationContext(), itemList, R.layout.rssitem_list_item, mFrom, mTo);
+        itemListView.setAdapter(itemListAdapter);
+    }
+
+    private LinkedList<Map<String, Object>> convertMapList(List<RSSItem> items) {
+        LinkedList<Map<String, Object>> itemList = new LinkedList<Map<String, Object>>();
         Map<String,Object> mMap = null;
-        for (RSSItem item : itemList) {
+        for (RSSItem item : items) {
             mMap = new HashMap<String,Object>();
             mMap.put("rss_item_id", item.getItemId());
             mMap.put("rss_item_title", Html.fromHtml(item.getTitle()));
             mMap.put("rss_item_description", Html.fromHtml(item.getDescription()));
-            mList.add(mMap);
+            itemList.add(mMap);
+        }
+        return itemList;
+    }
+
+    private class LoadDataTask extends AsyncTask<Void, Void, List<RSSItem>> {
+        @Override
+        protected List<RSSItem> doInBackground(Void... params) {
+            List<RSSItem> newItems = null;
+            try {
+                RSSFeed newFeed = RSSHelper.parseFeed(feed.getAddress());
+                feedDao.addItems(feed.getFeedId(), newFeed.getItemList());
+                newItems = feedDao.getNewItemListByFeedId(feed.getFeedId(), String.valueOf(topRowId));
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (XmlPullParserException e) {
+                e.printStackTrace();
+            }
+            return newItems;
         }
 
-        SimpleAdapter mAdapter = new SimpleAdapter(this.getApplicationContext(), mList, R.layout.rssitem_list_item, mFrom, mTo);
-        itemListView.setAdapter(mAdapter);
+        @Override
+        protected void onPostExecute(List<RSSItem> rssItems) {
+            if (rssItems != null && rssItems.size() > 0) {
+                LinkedList<Map<String, Object>> items = convertMapList(rssItems);
+                itemList.addAll(0, items);
+                topRowId = rssItems.get(0).getItemId();
+                itemListAdapter.notifyDataSetChanged();
+            }
+            itemListView.onRefreshComplete();
+            super.onPostExecute(rssItems);
+        }
+    }
+
+    private class GetMoreTask extends AsyncTask<Void, Void, List<RSSItem>> {
+        @Override
+        protected List<RSSItem> doInBackground(Void... params) {
+            List<RSSItem> items = feedDao.getOldItemListByFeedId(feed.getFeedId(), bottomRowId, pageLimit);
+            return items;
+        }
+
+        @Override
+        protected void onPostExecute(List<RSSItem> rssItems) {
+            if (rssItems != null && rssItems.size() > 0) {
+                LinkedList<Map<String, Object>> items = convertMapList(rssItems);
+                itemList.addAll(itemList.size(), items);
+                bottomRowId = rssItems.get(rssItems.size() - 1).getItemId();
+                itemListAdapter.notifyDataSetChanged();
+            }
+            itemListView.onRefreshComplete();
+            super.onPostExecute(rssItems);
+        }
     }
 
     @Override
-    public void onFeedSelected(int position, String feedId) {
+    public void onFeedSelected(int position, RSSFeed feed) {
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
                 .commit();
 
+        String feedId = feed.getFeedId();
+        this.feed = feed;
         this.loadFeed(feedId);
+//        itemListView.setRefreshing();
     }
 
     public void onSectionAttached(int number) {
