@@ -20,4 +20,14 @@
         android:autoText="false"
         android:hint="@string/feed_address"
         android:inputType="textUri" />
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/add_feed_progressbar"
+        android:layout_alignTop="@+id/feed_address_input"
+        android:layout_centerHorizontal="true"
+        android:visibility="invisible"
+        android:backgroundTintMode="src_over" />
+
 </RelativeLayout>
