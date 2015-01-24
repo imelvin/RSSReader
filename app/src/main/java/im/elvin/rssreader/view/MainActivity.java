@@ -18,6 +18,9 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +33,7 @@ import im.elvin.rssreader.model.RSSItem;
 
 
 public class MainActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks, PullToRefreshBase.OnRefreshListener<ListView> {
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -42,7 +45,7 @@ public class MainActivity extends ActionBarActivity
      */
     private CharSequence mTitle;
 
-    private ListView itemListView;
+    private PullToRefreshListView itemListView;
 
     private RSSFeedDao feedDao;
 
@@ -62,7 +65,8 @@ public class MainActivity extends ActionBarActivity
 
         feedDao = new RSSFeedDaoImpl(this.getApplicationContext());
 
-        itemListView = (ListView) findViewById(R.id.item_list);
+        itemListView = (PullToRefreshListView) findViewById(R.id.item_list);
+        itemListView.setOnRefreshListener(this);
 
         this.loadFeed("1");
 
@@ -83,6 +87,11 @@ public class MainActivity extends ActionBarActivity
     protected void onDestroy() {
         feedDao.close();
         super.onDestroy();
+    }
+
+    @Override
+    public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+        itemListView.onRefreshComplete();
     }
 
     public void loadFeed(String feedId) {
