@@ -47,7 +47,6 @@ public class AddFeedActivity extends Activity {
                     String feedAddress = feedAddressInput.getText().toString();
                     if (feedAddress != null && feedAddress.length() > 0) {
                         ParseFeedTask parseFeedTask = new ParseFeedTask();
-                        progressBar.setVisibility(ProgressBar.VISIBLE);
                         parseFeedTask.execute(feedAddress);
                     }
                 }
@@ -85,6 +84,11 @@ public class AddFeedActivity extends Activity {
     }
 
     private class ParseFeedTask extends AsyncTask<String, Integer, String> {
+        @Override
+        protected void onPreExecute() {
+            progressBar.setVisibility(ProgressBar.VISIBLE);
+            super.onPreExecute();
+        }
 
         @Override
         protected String doInBackground(String... params) {

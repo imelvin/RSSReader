@@ -7,6 +7,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -98,8 +99,8 @@ public class MainActivity extends ActionBarActivity
         for (RSSItem item : itemList) {
             mMap = new HashMap<String,Object>();
             mMap.put("rss_item_id", item.getItemId());
-            mMap.put("rss_item_title", item.getTitle());
-            mMap.put("rss_item_description", item.getDescription());
+            mMap.put("rss_item_title", Html.fromHtml(item.getTitle()));
+            mMap.put("rss_item_description", Html.fromHtml(item.getDescription()));
             mList.add(mMap);
         }
 
