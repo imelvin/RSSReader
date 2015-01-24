@@ -36,7 +36,7 @@ public class RSSFeedDaoImpl implements RSSFeedDao {
             String feedLink = cursor.getString(3);
             String feedDescription = cursor.getString(4);
 
-            RSSFeed feed = new RSSFeed(feedId, feedTitle, feedAddress, feedLink, feedDescription);
+            RSSFeed feed = new RSSFeed(feedId, feedTitle, feedAddress, feedLink, feedDescription, null);
             feedList.add(feed);
         }
         return feedList;
