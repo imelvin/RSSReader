@@ -8,6 +8,9 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +29,18 @@ public class RSSHelper {
     public static final String TAG_ITEM = "item";
     public static final String TAG_CATEGORY = "category";
     public static final String TAG_AUTHOR = "author";
+
+    public static RSSFeed parseFeed(String address) throws IOException, XmlPullParserException {
+        URL url = new URL(address);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+        conn.connect();
+        InputStream inputStream = conn.getInputStream();
+
+        RSSFeed feed = RSSHelper.parseFeed(address, inputStream);
+
+        return feed;
+    }
 
     public static RSSFeed parseFeed(String address, InputStream inputStream) throws XmlPullParserException, IOException {
         RSSFeed feed = null;

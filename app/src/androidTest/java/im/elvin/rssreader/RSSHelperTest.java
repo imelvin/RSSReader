@@ -18,14 +18,9 @@ import im.elvin.rssreader.model.RSSFeed;
 public class RSSHelperTest extends AndroidTestCase {
 
     public void testParseFeed() throws IOException, XmlPullParserException {
-        String address = "http://blog.csdn.net/cym492224103/rss/list";
-        URL url = new URL(address);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("GET");
-        conn.connect();
-        InputStream inputStream = conn.getInputStream();
+        String address = "http://cnbeta.feedsportal.com/c/34306/f/624776/index.rss";
 
-        RSSFeed feed = RSSHelper.parseFeed(address, inputStream);
+        RSSFeed feed = RSSHelper.parseFeed(address);
 
         assertNotNull(feed);
     }
