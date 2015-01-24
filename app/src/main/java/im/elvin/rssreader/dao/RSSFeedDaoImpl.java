@@ -1,5 +1,6 @@
 package im.elvin.rssreader.dao;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -82,9 +83,14 @@ public class RSSFeedDaoImpl implements RSSFeedDao {
     }
 
     @Override
-    public void createFeed(RSSFeed feed) {
-        String sql = "insert into rss_feed (feed_title, feed_address, feed_link, feed_description) values (?, ?, ?, ?)";
-        db.execSQL(sql, new Object[] {feed.getTitle(), feed.getAddress(), feed.getLink(), feed.getDescription()});
+    public String createFeed(RSSFeed feed) {
+        ContentValues values = new ContentValues();
+        values.put("feed_title", feed.getTitle());
+        values.put("feed_address", feed.getAddress());
+        values.put("feed_link", feed.getLink());
+        values.put("feed_description", feed.getDescription());
+        long id = db.insert("rss_feed", null, values);
+        return String.valueOf(id);
     }
 
     @Override

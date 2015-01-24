@@ -119,8 +119,8 @@ public class NavigationDrawerFragment extends Fragment {
         switch (resultCode) {
         case Constant.RESULT_OK:
             Bundle bundle = data.getExtras();
-            String feedAddress = bundle.getString("feed_address");
-            Toast.makeText(getActivity(), feedAddress, Toast.LENGTH_SHORT);
+            String feedId = bundle.getString("feed_id");
+            Toast.makeText(getActivity(), feedId, Toast.LENGTH_SHORT).show();
             break;
         }
     }

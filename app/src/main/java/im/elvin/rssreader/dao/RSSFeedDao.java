@@ -16,7 +16,7 @@ public interface RSSFeedDao {
 
     public RSSItem getItemByItemId(String itemId);
 
-    public void createFeed(RSSFeed feed);
+    public String createFeed(RSSFeed feed);
 
     public void addItems(String feedId, List<RSSItem> itemList);
 

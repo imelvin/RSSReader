@@ -14,5 +14,6 @@
     <string name="add_feed">Add Feed</string>
     <string name="title_activity_add_feed">AddFeedActivity</string>
     <string name="feed_address">Feed Address</string>
+    <string name="parse_error_msg">Please input a valid address</string>
 
 </resources>
