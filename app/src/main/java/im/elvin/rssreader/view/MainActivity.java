@@ -21,6 +21,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
+import com.handmark.pulltorefresh.library.ILoadingLayout;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
@@ -84,6 +85,8 @@ public class MainActivity extends ActionBarActivity
         itemListView.setOnRefreshListener(this);
         itemListView.setMode(PullToRefreshBase.Mode.BOTH);
 
+        setPullLabels();
+
         itemListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -96,6 +99,18 @@ public class MainActivity extends ActionBarActivity
             }
         });
 
+    }
+
+    private void setPullLabels() {
+        ILoadingLayout startLabels = itemListView.getLoadingLayoutProxy(true, false);
+        startLabels.setPullLabel(getString(R.string.pull_down_to_refresh));
+        startLabels.setRefreshingLabel(getString(R.string.refreshing));
+        startLabels.setReleaseLabel(getString(R.string.release_to_load));
+
+        ILoadingLayout endLabels = itemListView.getLoadingLayoutProxy(false, true);
+        endLabels.setPullLabel(getString(R.string.pull_up_to_load_more));
+        endLabels.setRefreshingLabel(getString(R.string.refreshing));
+        endLabels.setReleaseLabel(getString(R.string.release_to_load));
     }
 
     @Override
@@ -122,6 +137,7 @@ public class MainActivity extends ActionBarActivity
             topRowId = itemList.get(0).getItemId();
             bottomRowId = itemList.get(itemList.size() - 1).getItemId();
             this.loadItemList(itemList);
+
         }
     }
 
