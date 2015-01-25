@@ -18,7 +18,7 @@ public class RSSFeedDaoTest extends AndroidTestCase {
     public void testGetItemListByFeed() {
         RSSFeedDao feedDao = new RSSFeedDaoImpl(getContext());
 
-        RSSFeed feed1 = new RSSFeed(null, "Test Feed 1", null, null, null, null);
+        RSSFeed feed1 = new RSSFeed(null, "Test Feed 1", "test address", null, null, null);
         feedDao.createFeed(feed1);
 
         List<RSSFeed> feedList = feedDao.getAllFeedList();
@@ -28,13 +28,13 @@ public class RSSFeedDaoTest extends AndroidTestCase {
 
         List<RSSItem> itemList = new ArrayList<RSSItem>();
         for (int i = 0; i < 5; i++) {
-            RSSItem item = new RSSItem(null, "Test Title " + i, null, "Test Description Test Description Test Test.", null, null);
+            RSSItem item = new RSSItem(null, "Test Title " + i, "link", "Test Description Test Description Test Test.", null, null);
             itemList.add(item);
         }
 
         feedDao.addItems("1", itemList);
 
-        itemList = feedDao.getItemListByFeedId("1");
+        itemList = feedDao.getItemListByFeedId("1", 0, 10);
         assertNotNull(itemList);
         assertEquals(itemList.size() > 0, true);
 

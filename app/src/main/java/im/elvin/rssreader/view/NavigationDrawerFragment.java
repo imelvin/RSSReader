@@ -75,7 +75,8 @@ public class NavigationDrawerFragment extends Fragment {
     private boolean mUserLearnedDrawer;
 
     private RSSFeedDao feedDao;
-    private List<RSSFeed> feedList;
+    private List<Map<String, Object>> feedList;
+    private SimpleAdapter feedListAdapter;
 
     public NavigationDrawerFragment() {
     }
@@ -96,8 +97,7 @@ public class NavigationDrawerFragment extends Fragment {
             mFromSavedInstanceState = true;
         }
 
-        // Select either the default item (0) or the last selected item.
-//        selectItem(mCurrentSelectedPosition, feedList.get(0).getFeedId());
+        feedList = new ArrayList<Map<String, Object>>();
     }
 
     @Override
@@ -120,6 +120,12 @@ public class NavigationDrawerFragment extends Fragment {
         case Constant.RESULT_OK:
             Bundle bundle = data.getExtras();
             String feedId = bundle.getString("feed_id");
+            RSSFeed feed = feedDao.getFeedByFeedId(feedId);
+            List<RSSFeed> feeds = new ArrayList<RSSFeed>();
+            feeds.add(feed);
+            feedList.addAll(feedList.size(), convertFeedMapList(feeds));
+            feedListAdapter.notifyDataSetChanged();
+            selectItem(feedList.size(), feed);
             Toast.makeText(getActivity(), feedId, Toast.LENGTH_SHORT).show();
             break;
         }
@@ -148,11 +154,21 @@ public class NavigationDrawerFragment extends Fragment {
                 selectItem(position, (RSSFeed) map.get("rss_feed"));
             }
         });
-        feedList = feedDao.getAllFeedList();
+        List<RSSFeed> feeds = feedDao.getAllFeedList();
 
         String [] mFrom = new String[] {"text1"};
         int [] mTo = new int[] {android.R.id.text1};
 
+        List<Map<String, Object>> mList = convertFeedMapList(feeds);
+
+        feedListAdapter = new SimpleAdapter(getActionBar().getThemedContext(), mList, android.R.layout.simple_list_item_1, mFrom, mTo);
+
+        mDrawerListView.setAdapter(feedListAdapter);
+        mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
+        return feedListLayer;
+    }
+
+    private List<Map<String, Object>> convertFeedMapList(List<RSSFeed> feedList) {
         List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
         Map<String,Object> mMap = null;
         for (RSSFeed feed : feedList) {
@@ -161,12 +177,7 @@ public class NavigationDrawerFragment extends Fragment {
             mMap.put("text1", feed.getTitle());
             mList.add(mMap);
         }
-
-        SimpleAdapter mAdapter = new SimpleAdapter(getActionBar().getThemedContext(), mList, android.R.layout.simple_list_item_1, mFrom, mTo);
-
-        mDrawerListView.setAdapter(mAdapter);
-        mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
-        return feedListLayer;
+        return mList;
     }
 
     public boolean isDrawerOpen() {
@@ -303,11 +314,6 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-
-        if (item.getItemId() == R.id.action_example) {
-            Toast.makeText(getActivity(), "Example action.", Toast.LENGTH_SHORT).show();
             return true;
         }
 

@@ -11,6 +11,7 @@
     <string name="add_feed">添加订阅源</string>
     <string name="title_activity_add_feed">AddFeedActivity</string>
     <string name="feed_address">订阅源地址</string>
+    <string name="feed_address_exist">订阅源已存在</string>
     <string name="parse_error_msg">请输入一个合法的地址</string>
     <string name="show_origin">打开原始页面</string>
     <string name="pull_down_to_refresh">向下拉动刷新</string>

@@ -60,8 +60,8 @@ public class MainActivity extends ActionBarActivity
     private LinkedList<Map<String, Object>> itemList;
     private SimpleAdapter itemListAdapter;
     private RSSFeedDao feedDao;
-    private String topRowId;
-    private String bottomRowId;
+    private String topRowId = "0";
+    private String bottomRowId = "0";
 
     private int pageLimit = 15;
 
@@ -258,11 +258,6 @@ public class MainActivity extends ActionBarActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }

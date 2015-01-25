@@ -43,12 +43,17 @@ public class AddFeedActivity extends Activity {
         feedAddressInput.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (keyCode == KeyEvent.KEYCODE_ENTER) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
                     String feedAddress = feedAddressInput.getText().toString();
                     if (feedAddress != null && feedAddress.length() > 0) {
-                        ParseFeedTask parseFeedTask = new ParseFeedTask();
-                        parseFeedTask.execute(feedAddress);
+                        if (feedDao.isFeedExist(feedAddress)) {
+                            Toast.makeText(getApplicationContext(), R.string.feed_address_exist, Toast.LENGTH_SHORT).show();
+                        } else {
+                            ParseFeedTask parseFeedTask = new ParseFeedTask();
+                            parseFeedTask.execute(feedAddress);
+                        }
                     }
+                    return true;
                 }
                 return false;
             }
@@ -59,28 +64,6 @@ public class AddFeedActivity extends Activity {
     protected void onDestroy() {
         feedDao.close();
         super.onDestroy();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_add_feed, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     private class ParseFeedTask extends AsyncTask<String, Integer, String> {

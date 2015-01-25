@@ -25,6 +25,30 @@ public class RSSFeedDaoImpl implements RSSFeedDao {
     }
 
     @Override
+    public boolean isFeedExist(String address) {
+        Cursor cursor = db.query("rss_feed", new String[] {"id"}, "feed_address=?", new String[] {address.toLowerCase()}, null, null, null);
+        if (cursor.moveToNext()) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public RSSFeed getFeedByFeedId(String feedId) {
+        RSSFeed feed = null;
+        Cursor cursor = db.query("rss_feed", new String[] {"id", "feed_title", "feed_address", "feed_link", "feed_description"}, "id=?", new String[] {feedId}, null, null, null);
+        if (cursor.moveToNext()) {
+            String feedTitle = cursor.getString(1);
+            String feedAddress = cursor.getString(2);
+            String feedLink = cursor.getString(3);
+            String feedDescription = cursor.getString(4);
+
+            feed = new RSSFeed(feedId, feedTitle, feedAddress, feedLink, feedDescription, null);
+        }
+        return feed;
+    }
+
+    @Override
     public List<RSSFeed> getAllFeedList() {
         Cursor cursor = db.query("rss_feed", new String[] {"id", "feed_title", "feed_address", "feed_link", "feed_description"}, null, null, null, null, null);
         List<RSSFeed> feedList = new ArrayList<RSSFeed>();
@@ -44,7 +68,7 @@ public class RSSFeedDaoImpl implements RSSFeedDao {
 
     @Override
     public List<RSSItem> getItemListByFeedId(String feedId, int pageStart, int pageLimit) {
-        Cursor cursor = db.query("rss_item", new String[] {"id", "item_title", "item_link", "item_description", "item_category", "item_author"}, "feed_id=?", new String[] {feedId}, null, null, "id desc", pageStart + "," + (pageStart + pageLimit));
+        Cursor cursor = db.query("rss_item", new String[] {"id", "item_title", "item_link", "item_description", "item_category", "item_author"}, "feed_id=" + feedId, null, null, null, "id desc", pageStart + "," + pageLimit);
         List<RSSItem> itemList = new ArrayList<RSSItem>();
 
         while (cursor.moveToNext()) {
@@ -121,7 +145,7 @@ public class RSSFeedDaoImpl implements RSSFeedDao {
     public String createFeed(RSSFeed feed) {
         ContentValues values = new ContentValues();
         values.put("feed_title", feed.getTitle());
-        values.put("feed_address", feed.getAddress());
+        values.put("feed_address", feed.getAddress().toLowerCase());
         values.put("feed_link", feed.getLink());
         values.put("feed_description", feed.getDescription());
         long id = db.insert("rss_feed", null, values);
@@ -134,7 +158,7 @@ public class RSSFeedDaoImpl implements RSSFeedDao {
 
         for (RSSItem item : itemList) {
             Cursor cursor = db.query("rss_item", new String[] {"id"}, "feed_id=? and item_link=?", new String[] {feedId, item.getLink()}, null, null, null);
-            if (cursor.moveToNext()) {
+            if (!cursor.moveToNext()) {
                 db.execSQL(sql, new Object[] {item.getTitle(), item.getLink(), item.getDescription(), item.getCategory(), item.getAuthor(), feedId});
             }
         }
