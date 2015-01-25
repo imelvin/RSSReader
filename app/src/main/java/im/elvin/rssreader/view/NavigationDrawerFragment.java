@@ -120,13 +120,26 @@ public class NavigationDrawerFragment extends Fragment {
         case Constant.RESULT_OK:
             Bundle bundle = data.getExtras();
             String feedId = bundle.getString("feed_id");
-            RSSFeed feed = feedDao.getFeedByFeedId(feedId);
-            List<RSSFeed> feeds = new ArrayList<RSSFeed>();
-            feeds.add(feed);
-            feedList.addAll(feedList.size(), convertFeedMapList(feeds));
-            feedListAdapter.notifyDataSetChanged();
-            selectItem(feedList.size(), feed);
-            Toast.makeText(getActivity(), feedId, Toast.LENGTH_SHORT).show();
+
+            List<RSSFeed> feeds = feedDao.getAllFeedList();
+            String [] mFrom = new String[] {"text1"};
+            int [] mTo = new int[] {android.R.id.text1};
+            List<Map<String, Object>> mList = convertFeedMapList(feeds);
+            feedListAdapter = new SimpleAdapter(getActionBar().getThemedContext(), mList, android.R.layout.simple_list_item_1, mFrom, mTo);
+            mDrawerListView.setAdapter(feedListAdapter);
+
+            int position = 0;
+            RSSFeed feed = null;
+            for (int i = 0; i < mList.size(); i ++) {
+                Map<String, Object> map = mList.get(i);
+                if (((RSSFeed) map.get("rss_feed")).getFeedId().equals(feedId)) {
+                    feed = (RSSFeed) map.get("rss_feed");
+                    position = i;
+                }
+            }
+
+            selectItem(position, feed);
+            Toast.makeText(getActivity(), "添加订阅源成功", Toast.LENGTH_SHORT).show();
             break;
         }
     }
