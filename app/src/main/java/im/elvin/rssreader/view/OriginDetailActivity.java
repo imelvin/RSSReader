@@ -1,5 +1,11 @@
 package im.elvin.rssreader.view;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -13,12 +19,15 @@ public class OriginDetailActivity extends ActionBarActivity {
 
     private WebView originDetailWebView;
 
+    private String url;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_origin_detail);
 
-        String url = (String) getIntent().getExtras().get("url");
+        url = (String) getIntent().getExtras().get("url");
+        setTitle((String) getIntent().getExtras().get("title"));
 
         originDetailWebView = (WebView) findViewById(R.id.origin_detail_webview);
         originDetailWebView.loadUrl(url);
@@ -43,7 +52,20 @@ public class OriginDetailActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_copy_url) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                clipboard.setText(url);
+            } else {
+                ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                ClipData clipData = ClipData.newPlainText("链接已复制", url);
+                clipboard.setPrimaryClip(clipData);
+            }
+            return true;
+        } else if (id == R.id.action_menu_open_url_with_other_browser) {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(url));
+            startActivity(intent);
             return true;
         }
 
