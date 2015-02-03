@@ -25,6 +25,8 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
+import net.sqlcipher.database.SQLiteDatabase;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -85,6 +87,7 @@ public class NavigationDrawerFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        SQLiteDatabase.loadLibs(getActivity());
         feedDao = new RSSFeedDaoImpl(this.getActivity());
 
         // Read in the flag indicating whether or not the user has demonstrated awareness of the

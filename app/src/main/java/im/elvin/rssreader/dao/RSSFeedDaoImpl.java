@@ -2,12 +2,14 @@ package im.elvin.rssreader.dao;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+
+import net.sqlcipher.Cursor;
+import net.sqlcipher.database.SQLiteDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import im.elvin.rssreader.constant.Constant;
 import im.elvin.rssreader.model.RSSFeed;
 import im.elvin.rssreader.model.RSSItem;
 
@@ -21,15 +23,17 @@ public class RSSFeedDaoImpl implements RSSFeedDao {
 
     public RSSFeedDaoImpl(Context context) {
         this.dbHelper = new DBHelper(context);
-        this.db = dbHelper.getWritableDatabase();
+        this.db = dbHelper.getWritableDatabase(Constant.DB_PASSWORD);
     }
 
     @Override
     public boolean isFeedExist(String address) {
         Cursor cursor = db.query("rss_feed", new String[] {"id"}, "feed_address=?", new String[] {address.toLowerCase()}, null, null, null);
         if (cursor.moveToNext()) {
+            cursor.close();
             return true;
         }
+        cursor.close();
         return false;
     }
 
@@ -45,6 +49,7 @@ public class RSSFeedDaoImpl implements RSSFeedDao {
 
             feed = new RSSFeed(feedId, feedTitle, feedAddress, feedLink, feedDescription, null);
         }
+        cursor.close();
         return feed;
     }
 
@@ -63,6 +68,7 @@ public class RSSFeedDaoImpl implements RSSFeedDao {
             RSSFeed feed = new RSSFeed(feedId, feedTitle, feedAddress, feedLink, feedDescription, null);
             feedList.add(feed);
         }
+        cursor.close();
         return feedList;
     }
 
@@ -82,6 +88,7 @@ public class RSSFeedDaoImpl implements RSSFeedDao {
             RSSItem item = new RSSItem(itemId, itemTitle, itemLink, itemDescription, itemCategory, itemAuthor);
             itemList.add(item);
         }
+        cursor.close();
         return itemList;
     }
 
@@ -101,6 +108,7 @@ public class RSSFeedDaoImpl implements RSSFeedDao {
             RSSItem item = new RSSItem(itemId, itemTitle, itemLink, itemDescription, itemCategory, itemAuthor);
             itemList.add(item);
         }
+        cursor.close();
         return itemList;
     }
 
@@ -120,6 +128,7 @@ public class RSSFeedDaoImpl implements RSSFeedDao {
             RSSItem item = new RSSItem(itemId, itemTitle, itemLink, itemDescription, itemCategory, itemAuthor);
             itemList.add(item);
         }
+        cursor.close();
         return itemList;
     }
 
@@ -138,6 +147,7 @@ public class RSSFeedDaoImpl implements RSSFeedDao {
 
         RSSItem item = new RSSItem(id, itemTitle, itemLink, itemDescription, itemCategory, itemAuthor);
 
+        cursor.close();
         return item;
     }
 
@@ -161,6 +171,7 @@ public class RSSFeedDaoImpl implements RSSFeedDao {
             if (!cursor.moveToNext()) {
                 db.execSQL(sql, new Object[] {item.getTitle(), item.getLink(), item.getDescription(), item.getCategory(), item.getAuthor(), feedId});
             }
+            cursor.close();
         }
     }
 
