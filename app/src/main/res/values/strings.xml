@@ -18,5 +18,6 @@
     <string name="release_to_load">松开刷新</string>
     <string name="refreshing">加载中...</string>
     <string name="pull_up_to_load_more">向上拉动加载更多</string>
+    <string name="title_activity_origin_detail">OriginDetailActivity</string>
 
 </resources>

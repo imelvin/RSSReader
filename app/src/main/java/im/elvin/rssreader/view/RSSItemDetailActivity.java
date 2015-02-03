@@ -46,8 +46,12 @@ public class RSSItemDetailActivity extends Activity {
             showOriginButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setData(Uri.parse(item.getLink()));
+//                    Intent intent = new Intent(Intent.ACTION_VIEW);
+//                    intent.setData(Uri.parse(item.getLink()));
+                    Intent intent = new Intent(getApplicationContext(), OriginDetailActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("url", item.getLink());
+                    intent.putExtras(bundle);
                     startActivity(intent);
                 }
             });
