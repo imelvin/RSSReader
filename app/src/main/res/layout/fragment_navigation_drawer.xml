@@ -4,12 +4,24 @@
     android:layout_height="match_parent"
     android:background="#ccc">
 
-    <Button
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/add_feed"
-        android:id="@+id/add_feed_button"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="center_horizontal" >
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/add_feed"
+            android:id="@+id/add_feed_button" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="打开收藏夹"
+            android:id="@+id/open_favorite" />
+    </LinearLayout>
 
     <ListView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"

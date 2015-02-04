@@ -70,6 +70,7 @@ public class NavigationDrawerFragment extends Fragment {
     private LinearLayout feedListLayer;
     private ListView mDrawerListView;
     private Button addFeedButton;
+    private Button openFavoriteButton;
     private View mFragmentContainerView;
 
     private int mCurrentSelectedPosition = 0;
@@ -153,12 +154,21 @@ public class NavigationDrawerFragment extends Fragment {
                 R.layout.fragment_navigation_drawer, container, false);
         mDrawerListView = (ListView) feedListLayer.findViewById(R.id.feed_list);
         addFeedButton = (Button) feedListLayer.findViewById(R.id.add_feed_button);
+        openFavoriteButton = (Button) feedListLayer.findViewById(R.id.open_favorite);
 
         addFeedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), AddFeedActivity.class);
                 startActivityForResult(intent, Constant.REQUEST_ADD_FEED);
+            }
+        });
+
+        openFavoriteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), FavoriteListActivity.class);
+                startActivity(intent);
             }
         });
 

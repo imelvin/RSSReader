@@ -21,5 +21,6 @@
     <string name="title_activity_origin_detail">OriginDetailActivity</string>
     <string name="menu_copy_url">复制链接</string>
     <string name="menu_open_url_with_other_browser">使用其他浏览器打开</string>
+    <string name="title_activity_favorite_list">收藏夹</string>
 
 </resources>

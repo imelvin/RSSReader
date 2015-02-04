@@ -30,6 +30,10 @@
             android:name=".view.OriginDetailActivity"
             android:label="@string/title_activity_origin_detail" >
         </activity>
+        <activity
+            android:name=".view.FavoriteListActivity"
+            android:label="@string/title_activity_favorite_list" >
+        </activity>
     </application>
 
 </manifest>
