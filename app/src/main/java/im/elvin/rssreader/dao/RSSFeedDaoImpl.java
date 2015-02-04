@@ -191,4 +191,37 @@ public class RSSFeedDaoImpl implements RSSFeedDao {
         db.close();
     }
 
+    @Override
+    public List<RSSItem> getFavoriteItem() {
+        String sql = "select i.* from rss_item i, rss_favorite f where i.id = f.item_id order by f.id desc";
+        List<RSSItem> itemList = new ArrayList<RSSItem>();
+        SQLiteDatabase db = dbHelper.getReadableDatabase(Constant.DB_PASSWORD);
+
+        Cursor cursor = db.rawQuery(sql, null);
+        while (cursor.moveToNext()) {
+            String itemId = cursor.getString(0);
+            String itemTitle = cursor.getString(1);
+            String itemLink = cursor.getString(2);
+            String itemDescription = cursor.getString(3);
+            String itemCategory = cursor.getString(4);
+            String itemAuthor = cursor.getString(5);
+
+            RSSItem item = new RSSItem(itemId, itemTitle, itemLink, itemDescription, itemCategory, itemAuthor);
+            itemList.add(item);
+        }
+
+        cursor.close();
+        db.close();
+
+        return itemList;
+    }
+
+    @Override
+    public void addFavorite(String itemId) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase(Constant.DB_PASSWORD);
+        ContentValues values = new ContentValues();
+        values.put("item_id", itemId);
+        db.insert("rss_favorite", null, values);
+        db.close();
+    }
 }

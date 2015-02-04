@@ -22,11 +22,14 @@ public interface RSSFeedDao {
 
     public List<RSSItem> getOldItemListByFeedId(String feedId, String itemId, int pageLimit);
 
-
     public RSSItem getItemByItemId(String itemId);
+
+    public List<RSSItem> getFavoriteItem();
 
     public String createFeed(RSSFeed feed);
 
     public void addItems(String feedId, List<RSSItem> itemList);
+
+    public void addFavorite(String itemId);
 
 }

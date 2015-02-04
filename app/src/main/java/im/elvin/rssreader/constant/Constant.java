@@ -6,8 +6,8 @@ package im.elvin.rssreader.constant;
 public class Constant {
 
     public static final String DB_NAME = "rss.db";
-    public static final int DB_VERSION = 3;
-    public static final String DB_PASSWORD = "123456";
+    public static final int DB_VERSION = 1;
+    public static final String DB_PASSWORD = "12345678";
 
     public static final int REQUEST_ADD_FEED = 1;
 

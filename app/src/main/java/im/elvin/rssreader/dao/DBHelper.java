@@ -30,6 +30,11 @@ public class DBHelper extends SQLiteOpenHelper {
                                     "     feed_id integer " +
                                     " ) ";
 
+    private static final String SQL_CREATE_FAVORITE = " create table rss_favorite ( " +
+                                    "     id integer primary key autoincrement, " +
+                                    "     item_id integer " +
+                                    " ) ";
+
     public DBHelper(Context context) {
         super(context, Constant.DB_NAME, null, Constant.DB_VERSION);
     }
@@ -38,14 +43,17 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_FEED);
         db.execSQL(SQL_CREATE_ITEM);
+        db.execSQL(SQL_CREATE_FAVORITE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("drop table if exists rss_favorite");
         db.execSQL("drop table if exists rss_item");
         db.execSQL("drop table if exists rss_feed");
         db.execSQL(SQL_CREATE_FEED);
         db.execSQL(SQL_CREATE_ITEM);
+        db.execSQL(SQL_CREATE_FAVORITE);
     }
 
 }
