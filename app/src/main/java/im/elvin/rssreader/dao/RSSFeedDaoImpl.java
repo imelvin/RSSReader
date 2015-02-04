@@ -38,24 +38,6 @@ public class RSSFeedDaoImpl implements RSSFeedDao {
     }
 
     @Override
-    public RSSFeed getFeedByFeedId(String feedId) {
-        RSSFeed feed = null;
-        SQLiteDatabase db = dbHelper.getReadableDatabase(Constant.DB_PASSWORD);
-        Cursor cursor = db.query("rss_feed", new String[] {"id", "feed_title", "feed_address", "feed_link", "feed_description"}, "id=?", new String[] {feedId}, null, null, null);
-        if (cursor.moveToNext()) {
-            String feedTitle = cursor.getString(1);
-            String feedAddress = cursor.getString(2);
-            String feedLink = cursor.getString(3);
-            String feedDescription = cursor.getString(4);
-
-            feed = new RSSFeed(feedId, feedTitle, feedAddress, feedLink, feedDescription, null);
-        }
-        cursor.close();
-        db.close();
-        return feed;
-    }
-
-    @Override
     public List<RSSFeed> getAllFeedList() {
         SQLiteDatabase db = dbHelper.getReadableDatabase(Constant.DB_PASSWORD);
         Cursor cursor = db.query("rss_feed", new String[] {"id", "feed_title", "feed_address", "feed_link", "feed_description"}, null, null, null, null, null);
@@ -90,7 +72,14 @@ public class RSSFeedDaoImpl implements RSSFeedDao {
             String itemCategory = cursor.getString(4);
             String itemAuthor = cursor.getString(5);
 
-            RSSItem item = new RSSItem(itemId, itemTitle, itemLink, itemDescription, itemCategory, itemAuthor);
+            boolean isFavorite = false;
+            Cursor cursor2 = db.query("rss_favorite", new String[] {"item_id"}, "item_id=?", new String[] {itemId}, null, null, null);
+            if (cursor2.moveToNext()) {
+                isFavorite = true;
+            }
+            cursor2.close();
+
+            RSSItem item = new RSSItem(itemId, itemTitle, itemLink, itemDescription, itemCategory, itemAuthor, isFavorite);
             itemList.add(item);
         }
         cursor.close();
@@ -112,7 +101,14 @@ public class RSSFeedDaoImpl implements RSSFeedDao {
             String itemCategory = cursor.getString(4);
             String itemAuthor = cursor.getString(5);
 
-            RSSItem item = new RSSItem(itemId, itemTitle, itemLink, itemDescription, itemCategory, itemAuthor);
+            boolean isFavorite = false;
+            Cursor cursor2 = db.query("rss_favorite", new String[] {"item_id"}, "item_id=?", new String[] {itemId}, null, null, null);
+            if (cursor2.moveToNext()) {
+                isFavorite = true;
+            }
+            cursor2.close();
+
+            RSSItem item = new RSSItem(itemId, itemTitle, itemLink, itemDescription, itemCategory, itemAuthor, isFavorite);
             itemList.add(item);
         }
         cursor.close();
@@ -134,7 +130,14 @@ public class RSSFeedDaoImpl implements RSSFeedDao {
             String itemCategory = cursor.getString(4);
             String itemAuthor = cursor.getString(5);
 
-            RSSItem item = new RSSItem(itemId, itemTitle, itemLink, itemDescription, itemCategory, itemAuthor);
+            boolean isFavorite = false;
+            Cursor cursor2 = db.query("rss_favorite", new String[] {"item_id"}, "item_id=?", new String[] {itemId}, null, null, null);
+            if (cursor2.moveToNext()) {
+                isFavorite = true;
+            }
+            cursor2.close();
+
+            RSSItem item = new RSSItem(itemId, itemTitle, itemLink, itemDescription, itemCategory, itemAuthor, isFavorite);
             itemList.add(item);
         }
         cursor.close();
@@ -155,10 +158,17 @@ public class RSSFeedDaoImpl implements RSSFeedDao {
         String itemDescription = cursor.getString(3);
         String itemCategory = cursor.getString(4);
         String itemAuthor = cursor.getString(5);
-
-        RSSItem item = new RSSItem(id, itemTitle, itemLink, itemDescription, itemCategory, itemAuthor);
-
         cursor.close();
+
+        boolean isFavorite = false;
+        cursor = db.query("rss_favorite", new String[] {"item_id"}, "item_id=?", new String[] {itemId}, null, null, null);
+        if (cursor.moveToNext()) {
+            isFavorite = true;
+        }
+        cursor.close();
+
+        RSSItem item = new RSSItem(id, itemTitle, itemLink, itemDescription, itemCategory, itemAuthor, isFavorite);
+
         db.close();
         return item;
     }
@@ -206,7 +216,7 @@ public class RSSFeedDaoImpl implements RSSFeedDao {
             String itemCategory = cursor.getString(4);
             String itemAuthor = cursor.getString(5);
 
-            RSSItem item = new RSSItem(itemId, itemTitle, itemLink, itemDescription, itemCategory, itemAuthor);
+            RSSItem item = new RSSItem(itemId, itemTitle, itemLink, itemDescription, itemCategory, itemAuthor, true);
             itemList.add(item);
         }
 
@@ -222,6 +232,14 @@ public class RSSFeedDaoImpl implements RSSFeedDao {
         ContentValues values = new ContentValues();
         values.put("item_id", itemId);
         db.insert("rss_favorite", null, values);
+        db.close();
+    }
+
+    @Override
+    public void deleteItem(String itemId) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase(Constant.DB_PASSWORD);
+        db.delete("rss_favorite", "itemId = ?", new String[] {itemId});
+        db.delete("rss_item", "id = ?", new String[] {itemId});
         db.close();
     }
 }

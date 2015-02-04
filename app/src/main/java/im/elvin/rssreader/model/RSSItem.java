@@ -10,14 +10,16 @@ public class RSSItem {
     private String description;
     private String category;
     private String author;
+    private boolean isFavorite;
 
-    public RSSItem(String itemId, String title, String link, String description, String category, String author) {
+    public RSSItem(String itemId, String title, String link, String description, String category, String author, boolean isFavorite) {
         this.itemId = itemId;
         this.title = title;
         this.link = link;
         this.description = description;
         this.category = category;
         this.author = author;
+        this.isFavorite = isFavorite;
     }
 
     @Override
@@ -47,5 +49,9 @@ public class RSSItem {
 
     public String getAuthor() {
         return author;
+    }
+
+    public boolean isFavorite() {
+        return isFavorite;
     }
 }

@@ -12,8 +12,6 @@ public interface RSSFeedDao {
 
     public List<RSSFeed> getAllFeedList();
 
-    public RSSFeed getFeedByFeedId(String feedId);
-
     public boolean isFeedExist(String address);
 
     public List<RSSItem> getItemListByFeedId(String feedId, int pageStart, int pageLimit);
@@ -29,6 +27,8 @@ public interface RSSFeedDao {
     public String createFeed(RSSFeed feed);
 
     public void addItems(String feedId, List<RSSItem> itemList);
+
+    public void deleteItem(String itemId);
 
     public void addFavorite(String itemId);
 

@@ -98,7 +98,7 @@ public class RSSHelper {
                         itemList = new ArrayList<RSSItem>();
                     } else if (TAG_ITEM.equalsIgnoreCase(parser.getName())) {
                         itemLevel = false;
-                        item = new RSSItem(null, itemTitle, itemLink, itemDescription, itemCategory, itemAuthor);
+                        item = new RSSItem(null, itemTitle, itemLink, itemDescription, itemCategory, itemAuthor, false);
                         itemList.add(item);
                         itemTitle = null;
                         itemLink = null;
