@@ -61,7 +61,6 @@ public class RSSItemDetailActivity extends Activity {
 
     @Override
     protected void onDestroy() {
-        feedDao.close();
         super.onDestroy();
     }
 

@@ -105,7 +105,6 @@ public class NavigationDrawerFragment extends Fragment {
 
     @Override
     public void onDestroy() {
-        feedDao.close();
         super.onDestroy();
     }
 

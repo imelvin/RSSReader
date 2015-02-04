@@ -62,7 +62,6 @@ public class AddFeedActivity extends Activity {
 
     @Override
     protected void onDestroy() {
-        feedDao.close();
         super.onDestroy();
     }
 

@@ -19,27 +19,28 @@ import im.elvin.rssreader.model.RSSItem;
 public class RSSFeedDaoImpl implements RSSFeedDao {
 
     private final DBHelper dbHelper;
-    private final SQLiteDatabase db;
 
     public RSSFeedDaoImpl(Context context) {
         this.dbHelper = new DBHelper(context);
-        this.db = dbHelper.getWritableDatabase(Constant.DB_PASSWORD);
     }
 
     @Override
     public boolean isFeedExist(String address) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase(Constant.DB_PASSWORD);
         Cursor cursor = db.query("rss_feed", new String[] {"id"}, "feed_address=?", new String[] {address.toLowerCase()}, null, null, null);
         if (cursor.moveToNext()) {
             cursor.close();
             return true;
         }
         cursor.close();
+        db.close();
         return false;
     }
 
     @Override
     public RSSFeed getFeedByFeedId(String feedId) {
         RSSFeed feed = null;
+        SQLiteDatabase db = dbHelper.getReadableDatabase(Constant.DB_PASSWORD);
         Cursor cursor = db.query("rss_feed", new String[] {"id", "feed_title", "feed_address", "feed_link", "feed_description"}, "id=?", new String[] {feedId}, null, null, null);
         if (cursor.moveToNext()) {
             String feedTitle = cursor.getString(1);
@@ -50,11 +51,13 @@ public class RSSFeedDaoImpl implements RSSFeedDao {
             feed = new RSSFeed(feedId, feedTitle, feedAddress, feedLink, feedDescription, null);
         }
         cursor.close();
+        db.close();
         return feed;
     }
 
     @Override
     public List<RSSFeed> getAllFeedList() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase(Constant.DB_PASSWORD);
         Cursor cursor = db.query("rss_feed", new String[] {"id", "feed_title", "feed_address", "feed_link", "feed_description"}, null, null, null, null, null);
         List<RSSFeed> feedList = new ArrayList<RSSFeed>();
 
@@ -69,11 +72,13 @@ public class RSSFeedDaoImpl implements RSSFeedDao {
             feedList.add(feed);
         }
         cursor.close();
+        db.close();
         return feedList;
     }
 
     @Override
     public List<RSSItem> getItemListByFeedId(String feedId, int pageStart, int pageLimit) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase(Constant.DB_PASSWORD);
         Cursor cursor = db.query("rss_item", new String[] {"id", "item_title", "item_link", "item_description", "item_category", "item_author"}, "feed_id=" + feedId, null, null, null, "id desc", pageStart + "," + pageLimit);
         List<RSSItem> itemList = new ArrayList<RSSItem>();
 
@@ -89,11 +94,13 @@ public class RSSFeedDaoImpl implements RSSFeedDao {
             itemList.add(item);
         }
         cursor.close();
+        db.close();
         return itemList;
     }
 
     @Override
     public List<RSSItem> getNewItemListByFeedId(String feedId, String id) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase(Constant.DB_PASSWORD);
         Cursor cursor = db.query("rss_item", new String[] {"id", "item_title", "item_link", "item_description", "item_category", "item_author"}, "feed_id=? and id > ?", new String[] {feedId, id}, null, null, "id desc");
         List<RSSItem> itemList = new ArrayList<RSSItem>();
 
@@ -109,11 +116,13 @@ public class RSSFeedDaoImpl implements RSSFeedDao {
             itemList.add(item);
         }
         cursor.close();
+        db.close();
         return itemList;
     }
 
     @Override
     public List<RSSItem> getOldItemListByFeedId(String feedId, String id, int pageLimit) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase(Constant.DB_PASSWORD);
         Cursor cursor = db.query("rss_item", new String[] {"id", "item_title", "item_link", "item_description", "item_category", "item_author"}, "feed_id=? and id < ?", new String[] {feedId, id}, null, null, "id desc", "0," + pageLimit);
         List<RSSItem> itemList = new ArrayList<RSSItem>();
 
@@ -129,11 +138,13 @@ public class RSSFeedDaoImpl implements RSSFeedDao {
             itemList.add(item);
         }
         cursor.close();
+        db.close();
         return itemList;
     }
 
     @Override
     public RSSItem getItemByItemId(String itemId) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase(Constant.DB_PASSWORD);
         Cursor cursor = db.query("rss_item", new String[]{"id", "item_title", "item_link", "item_description", "item_category", "item_author"}, "id=?", new String[]{itemId}, null, null, null);
         List<RSSItem> itemList = new ArrayList<RSSItem>();
 
@@ -148,22 +159,26 @@ public class RSSFeedDaoImpl implements RSSFeedDao {
         RSSItem item = new RSSItem(id, itemTitle, itemLink, itemDescription, itemCategory, itemAuthor);
 
         cursor.close();
+        db.close();
         return item;
     }
 
     @Override
     public String createFeed(RSSFeed feed) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase(Constant.DB_PASSWORD);
         ContentValues values = new ContentValues();
         values.put("feed_title", feed.getTitle());
         values.put("feed_address", feed.getAddress().toLowerCase());
         values.put("feed_link", feed.getLink());
         values.put("feed_description", feed.getDescription());
         long id = db.insert("rss_feed", null, values);
+        db.close();
         return String.valueOf(id);
     }
 
     @Override
     public void addItems(String feedId, List<RSSItem> itemList) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase(Constant.DB_PASSWORD);
         String sql = "insert into rss_item (item_title, item_link, item_description, item_category, item_author, feed_id) values (?, ?, ?, ?, ?, ?)";
 
         for (RSSItem item : itemList) {
@@ -173,10 +188,7 @@ public class RSSFeedDaoImpl implements RSSFeedDao {
             }
             cursor.close();
         }
-    }
-
-    @Override
-    public void close() {
         db.close();
     }
+
 }

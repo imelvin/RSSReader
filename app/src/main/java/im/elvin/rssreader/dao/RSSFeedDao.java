@@ -29,6 +29,4 @@ public interface RSSFeedDao {
 
     public void addItems(String feedId, List<RSSItem> itemList);
 
-    public void close();
-
 }
