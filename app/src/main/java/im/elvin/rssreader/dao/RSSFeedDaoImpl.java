@@ -229,16 +229,21 @@ public class RSSFeedDaoImpl implements RSSFeedDao {
     @Override
     public void addFavorite(String itemId) {
         SQLiteDatabase db = dbHelper.getWritableDatabase(Constant.DB_PASSWORD);
-        ContentValues values = new ContentValues();
-        values.put("item_id", itemId);
-        db.insert("rss_favorite", null, values);
+        Cursor cursor = db.query("rss_favorite", new String[] {"id"}, "item_id=?", new String[] {itemId}, null, null, null);
+
+        if (!cursor.moveToNext()) {
+            ContentValues values = new ContentValues();
+            values.put("item_id", itemId);
+            db.insert("rss_favorite", null, values);
+        }
+        cursor.close();
         db.close();
     }
 
     @Override
     public void deleteItem(String itemId) {
         SQLiteDatabase db = dbHelper.getWritableDatabase(Constant.DB_PASSWORD);
-        db.delete("rss_favorite", "itemId = ?", new String[] {itemId});
+        db.delete("rss_favorite", "item_id = ?", new String[] {itemId});
         db.delete("rss_item", "id = ?", new String[] {itemId});
         db.close();
     }

@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.text.Html;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,6 +21,7 @@ import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.Toast;
 
 import com.handmark.pulltorefresh.library.ILoadingLayout;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
@@ -99,6 +101,7 @@ public class MainActivity extends ActionBarActivity
             }
         });
 
+        this.registerForContextMenu(itemListView.getRefreshableView());
     }
 
     private void setPullLabels() {
@@ -237,6 +240,38 @@ public class MainActivity extends ActionBarActivity
         actionBar.setTitle(mTitle);
     }
 
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+
+        menu.setHeaderTitle("操作");
+        menu.add(Menu.NONE, Menu.FIRST + 1, 1, "添加收藏");
+        menu.add(Menu.NONE, Menu.FIRST + 2, 1, "删除条目");
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item
+                .getMenuInfo();
+        int position = info.position - 1;
+        Map<String, Object> itemMap = itemList.get(position);
+        String itemId = (String) itemMap.get("rss_item_id");
+
+        switch (item.getItemId()) {
+            // 收藏
+            case Menu.FIRST + 1:
+                feedDao.addFavorite(itemId);
+                Toast.makeText(getApplicationContext(), "已收藏", Toast.LENGTH_SHORT).show();
+                break;
+            // 删除
+            case Menu.FIRST + 2:
+                itemList.remove(position);
+                itemListAdapter.notifyDataSetChanged();
+                feedDao.deleteItem(itemId);
+                break;
+        }
+        return super.onContextItemSelected(item);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
