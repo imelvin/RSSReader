@@ -1,15 +1,19 @@
 package im.elvin.rssreader.helper;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.util.Xml;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,14 +34,40 @@ public class RSSHelper {
     public static final String TAG_CATEGORY = "category";
     public static final String TAG_AUTHOR = "author";
 
-    public static RSSFeed parseFeed(String address) throws IOException, XmlPullParserException {
+    public static RSSFeed parseFeed(String address, Context context, ProgressDialog progressDialog) throws IOException, XmlPullParserException {
         URL url = new URL(address);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
         conn.connect();
+        int fileSize = conn.getContentLength();
         InputStream inputStream = conn.getInputStream();
+        String tmpFileName = "tmp.xml";
+        OutputStream fileOutputStream = context.openFileOutput(tmpFileName, Context.MODE_PRIVATE);
+        byte [] buffer = new byte [4096];
 
+        int length, downloadedSize = 0;
+        while((length = inputStream.read(buffer)) > 0){
+            fileOutputStream.write(buffer,0,length);
+            if (fileSize > 0) {
+                downloadedSize += length;
+                if (progressDialog != null) {
+                    progressDialog.setProgress(90 * downloadedSize / fileSize);
+                }
+            }
+        }
+        fileOutputStream.close();
+        inputStream.close();
+
+        if (progressDialog != null) {
+            progressDialog.setProgress(90);
+        }
+
+        inputStream = context.openFileInput(tmpFileName);
         RSSFeed feed = RSSHelper.parseFeed(address, inputStream);
+
+        if (progressDialog != null) {
+            progressDialog.setProgress(95);
+        }
 
         return feed;
     }

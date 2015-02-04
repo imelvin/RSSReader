@@ -1,6 +1,7 @@
 package im.elvin.rssreader.view;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,7 +27,7 @@ import im.elvin.rssreader.model.RSSFeed;
 public class AddFeedActivity extends Activity {
 
     private EditText feedAddressInput;
-    private ProgressBar progressBar;
+    private ProgressDialog progressDialog;
 
     private RSSFeedDao feedDao;
 
@@ -36,7 +37,7 @@ public class AddFeedActivity extends Activity {
         setContentView(R.layout.activity_add_feed);
 
         feedAddressInput = (EditText) findViewById(R.id.feed_address_input);
-        progressBar = (ProgressBar) findViewById(R.id.add_feed_progressbar);
+        this.createProgressDialog();
 
         feedDao = new RSSFeedDaoImpl(getApplicationContext());
 
@@ -60,6 +61,15 @@ public class AddFeedActivity extends Activity {
         });
     }
 
+    private void createProgressDialog() {
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle("请等待");
+        progressDialog.setMessage("正在获取订阅源...");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.setCancelable(false);
+        progressDialog.setMax(100);
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -68,7 +78,7 @@ public class AddFeedActivity extends Activity {
     private class ParseFeedTask extends AsyncTask<String, Integer, String> {
         @Override
         protected void onPreExecute() {
-            progressBar.setVisibility(ProgressBar.VISIBLE);
+            progressDialog.show();
             super.onPreExecute();
         }
 
@@ -78,9 +88,10 @@ public class AddFeedActivity extends Activity {
             RSSFeed feed = null;
             String feedId = null;
             try {
-                feed = RSSHelper.parseFeed(feedAddress);
+                feed = RSSHelper.parseFeed(feedAddress, AddFeedActivity.this, progressDialog);
                 feedId = feedDao.createFeed(feed);
                 feedDao.addItems(feedId, feed.getItemList());
+                progressDialog.setProgress(100);
             } catch (IOException e) {
                 Log.e("parse", e.getMessage());
             } catch (XmlPullParserException e) {
@@ -91,7 +102,7 @@ public class AddFeedActivity extends Activity {
 
         @Override
         protected void onPostExecute(String feedId) {
-            progressBar.setVisibility(ProgressBar.INVISIBLE);
+            progressDialog.dismiss();
 
             if (feedId != null && feedId.length() > 0) {
                 Bundle bundle = new Bundle();

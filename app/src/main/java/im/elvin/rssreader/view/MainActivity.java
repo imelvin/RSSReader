@@ -169,7 +169,7 @@ public class MainActivity extends ActionBarActivity
         protected List<RSSItem> doInBackground(Void... params) {
             List<RSSItem> newItems = null;
             try {
-                RSSFeed newFeed = RSSHelper.parseFeed(feed.getAddress());
+                RSSFeed newFeed = RSSHelper.parseFeed(feed.getAddress(), MainActivity.this, null);
                 feedDao.addItems(feed.getFeedId(), newFeed.getItemList());
                 newItems = feedDao.getNewItemListByFeedId(feed.getFeedId(), String.valueOf(topRowId));
             } catch (IOException e) {
